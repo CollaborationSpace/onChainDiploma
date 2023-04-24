@@ -1,6 +1,6 @@
 To deploy contract:
 
 ```shell
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+npm run node
+npm run deploy
 ```
