@@ -7,7 +7,7 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract OnChainDiploma is Ownable {
+
     enum StudentStatus {
         student,
         expelled,
@@ -21,67 +21,66 @@ contract OnChainDiploma is Ownable {
         specialist
     }
 
-    enum Faculty {
-        O,
-        E,
-        I,
-        R,
-        A
-    }
 
-    uint bachelorSec = 118195200;
-    uint specialistSec = 149731200;
-    uint magistracySec = 55036800;
+contract OnChainDiploma is Ownable, AccessControlEnumerable {
+
+    bytes32 University = keccak256(abi.encodePacked('University')); 
+
+    mapping(address => string) public universityNames;
 
     struct Student {
         uint id;
-        string name;
-        string secondName;
-        string thirdName;
-        uint start;
-        uint end;
+        string fio;
         string photo;
         uint birthday;
         string directionOfStudyCode;
-        Faculty faculty;
+        address universityAddress;
         StudentStatus status;
         AcademicQualification qualification;
     }
 
-    mapping(uint => Student) students;
+    mapping(uint => Student) public students;
 
-    uint private studentsCounter = 0;
+    uint public studentsCounter = 0;
+    uint public universityCounter = 0;
 
-    constructor(bool isDev,uint _bachelorSec,uint _specialistSec, uint _magistracySec ) {
-        if(isDev){
-            bachelorSec = _bachelorSec;
-            specialistSec = _specialistSec;
-            magistracySec = _magistracySec;
-        }
+    constructor(string memory name) {
+        registerUniversity(msg.sender, name);
     }
 
-    function addNewStudents(Student[] memory newStudents) public {
+    function registerUniversity(address universityAddress, string memory name) public onlyOwner {
+        _grantRole(University,universityAddress);
+        universityNames[universityAddress] = name;
+    }
+
+    function addNewStudents(Student[] memory newStudents) public onlyRole(University) {
         uint len = newStudents.length;
         for (uint i = 0; i < len; i++) {
-            // require(newStudents[i].start >= block.timestamp,"addNewStudents: start < block.timestamp");
-            uint sec = newStudents[i].qualification == AcademicQualification.bachelor ? bachelorSec 
-            : newStudents[i].qualification == AcademicQualification.magistracy ? magistracySec 
-            : specialistSec;
-            newStudents[i].end = newStudents[i].start + sec;
-            newStudents[i].status == StudentStatus.student;
-            students[studentsCounter++] = newStudents[i];
+            uint studentId = studentsCounter++;
+            newStudents[i].id = studentId;
+            newStudents[i].universityAddress = msg.sender;
+            students[studentId] = newStudents[i];
         }
     }
 
-    function getStudentById(uint id) public view returns(Student memory){
-        return students[id];
+    function isStudentGraduated(uint id) public view returns(bool){
+        return students[id].status == StudentStatus.graduate;
     }
 
-    function changeStatusToGraduate(uint[] calldata ids) public {
+    function changeStudentStatusGraduate(uint[] calldata ids) public onlyRole(University){
+        _changeStatus(ids,StudentStatus.graduate);
+    }
+
+    function changeStudentStatusExpelled(uint[] calldata ids) public onlyRole(University){
+        _changeStatus(ids,StudentStatus.expelled);
+        
+    }
+
+    function _changeStatus(uint[] calldata ids, StudentStatus status) private {
         uint len = ids.length;
         for (uint i = 0; i < len; i++) {
-            require(students[ids[i]].end < block.timestamp,'changeStatusGraduate: it is too early');
-            students[ids[i]].status = StudentStatus.graduate;
+            require(students[ids[i]].universityAddress == msg.sender,'changeStatusGraduate: its not your student');
+            students[ids[i]].status = status;
         }
     }
 }
