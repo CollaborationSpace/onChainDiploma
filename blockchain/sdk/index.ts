@@ -11,15 +11,23 @@ export default class OnChainDiplomaSDK {
             address = constants.addresses.onChainDiploma
         this.contract = new ethers.Contract(address, json.abi, signerOrProvider ? signerOrProvider : new ethers.providers.JsonRpcProvider()) as unknown as OnChainDiploma
     }
+    // address адрес контракта
 
+    // добавление в блокчейнм массив студентов
     addNewStudents = async (students: Student[]) => {
         return await this.contract.addNewStudents(students)
     }
 
+    // получение студента из блокчейна
     getStudentById = async (id: number) => {
         return await this.contract.students(id)
     }
 
+     
+    /**
+     * изменение статуса
+     * @function
+     */
     changeStatusToGraduate = async (ids: number[]) => {
         return await this.contract.changeStudentStatusGraduate(ids)
     }
@@ -35,6 +43,7 @@ export default class OnChainDiplomaSDK {
     isStudentGraduated = async (id: number) => {
         return await this.contract.isStudentGraduated(id)
     }
+
 
     makeStudent = (fio: string, photo: string, birthday: number, directionOfStudyCode: string, qualification: AcademicQualification): Student => {
         return {
