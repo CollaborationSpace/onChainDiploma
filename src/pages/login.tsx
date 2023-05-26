@@ -6,10 +6,12 @@ import { auth } from '@/config/firebase';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import {useParams} from 'next/navigation';
+import { Alert, Space } from 'antd';
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [errorLogin, setErrorLogin] = useState(false);
     
   useEffect(() => {
     // Проверка статуса аутентификации пользователя
@@ -34,6 +36,8 @@ const LoginForm = () => {
         // Signed in
         const user = userCredential.user;
         setLoading(false);
+        setErrorLogin(false);
+
         // ...
       })
       .catch((error) => {
@@ -41,6 +45,7 @@ const LoginForm = () => {
 
         const errorCode = error.code;
         const errorMessage = error.message;
+        setErrorLogin(true);
         console.log('Ошибка входа в систему:', error);
 
       });
@@ -48,7 +53,10 @@ const LoginForm = () => {
 
   return (
     <div
-      style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+      style={{ display: 'flex', height: '500px', justifyContent: 'start', alignItems: 'center', flexDirection: 'column', gap: '50%' }}>
+        <Space direction="vertical" style={{ width: '100%' }}>
+        {errorLogin && <Alert message="Ошибка входа в систему" type="error" />}
+        </Space>
       <Form onFinish={handleLogin}>
         <Form.Item
           name="email"

@@ -1,7 +1,5 @@
 'use client';
 
-import OnChainDiplomaSDK from '../../blockchain/sdk';
-
 import { auth } from '@/config/firebase';
 import { BlockOutlined, FileSearchOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
@@ -83,8 +81,23 @@ export default function LayoutMain({ childComponent }) {
         <Menu theme="dark" mode="inline" items={items} />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
-          {user && <LogoutButton setUser={setUser} />}
+        <Header
+          style={{
+            padding: 0,
+            background: colorBgContainer,
+            display: 'flex',
+            justifyContent: 'end',
+            alignItems: 'center',
+          }}>
+          {user ? (
+            <>
+              <LogoutButton setUser={setUser} />
+              <p style={{margin: '0 20px'}}>{auth.currentUser.email}</p>
+            </>
+          ) :
+            <p style={{margin: '0 20px'}}>Пользователь не авторизован</p>
+
+          }
         </Header>
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>

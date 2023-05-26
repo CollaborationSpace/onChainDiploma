@@ -4,9 +4,11 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { Alert, Space } from 'antd';
 
 const Registration = () => {
   const [loading, setLoading] = useState(false);
+  const [errorReg, setErrorReg] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,6 +33,7 @@ const Registration = () => {
         // Signed in
         const user = userCredential.user;
         setLoading(false);
+        setErrorReg(false);
         // ...
       })
       .catch((error) => {
@@ -38,12 +41,17 @@ const Registration = () => {
 
         const errorCode = error.code;
         const errorMessage = error.message;
+        setErrorReg(true);
+
         console.log('Ошибка входа в систему:', error);
       });
   };
   return (
     <div
-      style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>
+      style={{ display: 'flex', height: '500px', justifyContent: 'start', alignItems: 'center', flexDirection: 'column', gap: '50%' }}>
+        <Space direction="vertical" style={{ width: '100%' }}>
+          {errorReg && <Alert message="Ошибка регистрации" type="error" />}
+        </Space>
       <Form onFinish={handleLogin}>
         <Form.Item
           name="email"
@@ -64,7 +72,7 @@ const Registration = () => {
           </Button>
         </Form.Item>
         <Form.Item>
-          <Link href="/registration">Ввойти</Link>
+          <Link href="/login">Ввойти</Link>
         </Form.Item>
       </Form>
     </div>

@@ -5,20 +5,22 @@ import OnChainDiplomaSDK from '../../../blockchain/sdk';
 
 const DiplomContent: FC = () => {
   const [diplom, setDiplom] = useState<any>();
-  
+  const [pageId, setPageId] = useState<any>();
 
   const test = new OnChainDiplomaSDK();
 
   const router = useRouter();
-  
 
   useEffect(() => {
     // вывести текущей ur);
-    test.getStudentById(router.query.id).then((res) => {
-      setDiplom(res);
-      console.log(res);
-    })
-  }, []);
+
+    router.query.id &&
+      test.getStudentById(router.query.id).then((res) => {
+        setDiplom(res);
+        setPageId(router.query.id);
+        console.log(res);
+      });
+  }, [pageId]);
 
   return (
     <>

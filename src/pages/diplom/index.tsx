@@ -24,7 +24,6 @@ const DiplomContent: FC = () => {
 const Diplom = () => {
   const tes = useRouter();
 
-  console.log(tes.);
   return <LayoutMain childComponent={<DiplomContent />}> </LayoutMain>;
 };
 
