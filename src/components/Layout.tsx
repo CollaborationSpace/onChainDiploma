@@ -5,6 +5,7 @@ import { BlockOutlined, FileSearchOutlined, LoginOutlined, UserOutlined } from '
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Button, Layout, Menu, theme } from 'antd';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -58,12 +59,17 @@ const items: MenuItem[] = [
 export default function LayoutMain({ childComponent }) {
   const [user, setUser] = useState(auth.currentUser);
 
+  const router = useRouter();
+
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    console.log(router);
+    console.log(router.query);
+  }, []);
   //   const user = auth.currentUser;
 
   return (
@@ -82,29 +88,40 @@ export default function LayoutMain({ childComponent }) {
       </Sider>
       <Layout>
         <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-            display: 'flex',
-            justifyContent: 'end',
-            alignItems: 'center',
-          }}>
+          style={
+            {
+              padding: 0,
+              background: colorBgContainer,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              // backgroundColor: '#002140;',
+              backgroundColor: '#f5f5f5',
+            }
+            // backgroundImage: 'linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%)',
+          }>
+          <Breadcrumb style={{ margin: '16px 20px' }}>
+            {router.asPath
+              .substring(1)
+              .split('/')
+              .map((item) => {
+                return <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>;
+              })}
+          </Breadcrumb>
           {user ? (
             <>
-              <LogoutButton setUser={setUser} />
-              <p style={{margin: '0 20px'}}>{auth.currentUser.email}</p>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <LogoutButton setUser={setUser} />
+                <p style={{ margin: '0 20px' }}>{auth.currentUser.email}</p>
+              </div>
             </>
-          ) :
-            <p style={{margin: '0 20px'}}>Пользователь не авторизован</p>
-
-          }
+          ) : (
+            <p style={{ margin: '0 20px' }}>Пользователь не авторизован</p>
+          )}
         </Header>
-        <Content style={{ margin: '0 16px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
-          </Breadcrumb>
-          <div style={{ padding: 24, minHeight: 360, background: colorBgContainer }}>
+              
+        <Content style={{ margin: '0 16px',  }}>
+          <div style={{ padding: 24, minHeight: 360, background: colorBgContainer, height: '100%'  }}>
             {childComponent}
           </div>
         </Content>
