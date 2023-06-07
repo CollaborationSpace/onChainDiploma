@@ -43,6 +43,7 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
 
     uint public studentsCounter = 0;
     uint public universityCounter = 0;
+    Student[] public allStudents;
 
     constructor(string memory name) {
         registerUniversity(msg.sender, name);
@@ -60,6 +61,7 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
             newStudents[i].id = studentId;
             newStudents[i].universityAddress = msg.sender;
             students[studentId] = newStudents[i];
+            allStudents.push(newStudents[i]);
         }
     }
 

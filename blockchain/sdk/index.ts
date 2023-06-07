@@ -23,7 +23,12 @@ export default class OnChainDiplomaSDK {
         return await this.contract.students(id)
     }
 
-     
+    // получить всех студентов 
+    getAllStudents = async () => {
+        return await this.contract.allStudents(await this.contract.studentsCounter())
+    }
+
+
     /**
      * изменение статуса
      * @function
