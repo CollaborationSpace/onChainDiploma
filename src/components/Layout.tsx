@@ -66,12 +66,6 @@ export default function LayoutMain({ childComponent }) {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  useEffect(() => {
-    console.log(router);
-    console.log(router.query);
-  }, []);
-  //   const user = auth.currentUser;
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
