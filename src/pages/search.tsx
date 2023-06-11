@@ -3,11 +3,11 @@ import { Select } from 'antd';
 import React from 'react';
 
 const onChange = (value: string) => {
-  console.log(`selected ${value}`);
+  // console.log(`selected ${value}`);
 };
 
 const onSearch = (value: string) => {
-  console.log('search:', value);
+  // console.log('search:', value);
 };
 
 const SearchContent: React.FC = () => (

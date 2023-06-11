@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "node": "cd blockchain && npx hardhat node",
+    "blockchain": "cd blockchain && npx hardhat node",
     "deploy": "cd blockchain && npx hardhat run scripts/deploy.ts"
   },
   "dependencies": {
