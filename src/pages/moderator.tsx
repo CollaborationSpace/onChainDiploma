@@ -21,6 +21,8 @@ const ModeratorContent = () => {
 
     if (user !== null) {
       setLoading(false);
+
+      const data = sdk.getAllStudents().then(data => console.log(data));
     } else {
       // перенаправляем на страницу логина
       router.push('/login');

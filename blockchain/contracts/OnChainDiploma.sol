@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.0;
+pragma solidity ^0.8.0;
 
 // Uncomment this line to use console.log
 import "hardhat/console.sol";
@@ -43,7 +43,16 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
 
     uint public studentsCounter = 0;
     uint public universityCounter = 0;
+
+    function getStudentsCounter() public view returns(uint){
+        return studentsCounter;
+    }
+
     Student[] public allStudents;
+
+    function getAllStudents() public view returns(Student[] memory){
+        return allStudents;
+    }
 
     constructor(string memory name) {
         registerUniversity(msg.sender, name);

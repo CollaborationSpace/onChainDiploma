@@ -9,7 +9,7 @@ export default class OnChainDiplomaSDK {
     constructor(address?: string, signerOrProvider?: ethers.Signer | ethers.providers.Provider) {
         if (address == undefined)
             address = constants.addresses.onChainDiploma
-        this.contract = new ethers.Contract(address, json.abi, signerOrProvider ? signerOrProvider : new ethers.providers.JsonRpcProvider()) as unknown as OnChainDiploma
+        this.contract = new ethers.Contract(address, json.abi, signerOrProvider != undefined ? signerOrProvider : new ethers.providers.JsonRpcProvider()) as unknown as OnChainDiploma
     }
     // address адрес контракта
 
@@ -25,9 +25,8 @@ export default class OnChainDiplomaSDK {
 
     // получить всех студентов 
     getAllStudents = async () => {
-        return await this.contract.allStudents(await this.contract.studentsCounter())
+        return await this.contract.getAllStudents()
     }
-
 
     /**
      * изменение статуса
