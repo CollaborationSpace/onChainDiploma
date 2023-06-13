@@ -26,7 +26,6 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
 
     bytes32 University = keccak256(abi.encodePacked('University')); 
 
-    mapping(address => string) public universityNames;
 
     struct Student {
         uint id;
@@ -39,6 +38,7 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
         AcademicQualification qualification;
     }
 
+    mapping(address => string) public universityNames;
     mapping(uint => Student) public students;
 
     uint public studentsCounter = 0;
@@ -74,6 +74,11 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
         }
     }
 
+    function updateStudent(Student memory student) public onlyRole(University) {
+        require(student.universityAddress == msg.sender, 'not your student');
+        students[student.id] = student;
+    }
+
     function isStudentGraduated(uint id) public view returns(bool){
         return students[id].status == StudentStatus.graduate;
     }
@@ -84,7 +89,6 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
 
     function changeStudentStatusExpelled(uint[] calldata ids) public onlyRole(University){
         _changeStatus(ids,StudentStatus.expelled);
-        
     }
 
     function _changeStatus(uint[] calldata ids, StudentStatus status) private {

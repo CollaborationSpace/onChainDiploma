@@ -18,6 +18,11 @@ export default class OnChainDiplomaSDK {
         return await this.contract.addNewStudents(students)
     }
 
+    // изменение информации о студенте
+    updateStudent = async (student: Student) => {
+        return await this.contract.updateStudent(student)
+    }
+
     // получение студента из блокчейна
     getStudentById = async (id: number) => {
         return await this.contract.students(id)
