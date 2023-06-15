@@ -1,7 +1,7 @@
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import json from '../artifacts/contracts/OnChainDiploma.sol/OnChainDiploma.json'
 import { OnChainDiploma } from '../typechain-types';
-import constants from '../scripts/constants.json'
+import constants from '../scripts/constants.json';
 
 export default class OnChainDiplomaSDK {
     contract: OnChainDiploma
@@ -82,7 +82,7 @@ export enum AcademicQualification {
 }
 
 export type Student = {
-    id: number;
+    id: BigNumber;
     fio: string;
     photo: string;
     birthday: number;
