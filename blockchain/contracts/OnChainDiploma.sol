@@ -77,6 +77,14 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
     function updateStudent(Student memory student) public onlyRole(University) {
         require(student.universityAddress == msg.sender, 'not your student');
         students[student.id] = student;
+        Student[] memory _allStudents = allStudents;
+        uint len = allStudents.length;
+        for (uint i = 0; i < len; i++) {
+            if(_allStudents[i].id == student.id){
+                allStudents[i] = student;
+                break;
+            }
+        }
     }
 
     function isStudentGraduated(uint id) public view returns(bool){

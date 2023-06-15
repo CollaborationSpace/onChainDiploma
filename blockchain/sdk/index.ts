@@ -20,6 +20,7 @@ export default class OnChainDiplomaSDK {
 
     // изменение информации о студенте
     updateStudent = async (student: Student) => {
+        console.log("student", student)
         return await this.contract.updateStudent(student)
     }
 
@@ -62,7 +63,7 @@ export default class OnChainDiplomaSDK {
             directionOfStudyCode,
             universityAddress: '',
             qualification,
-            id: 0,
+            id: BigNumber.from(0),
             status: StudentStatus.student,
         }
     }
