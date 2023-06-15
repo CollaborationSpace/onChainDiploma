@@ -25,14 +25,15 @@ interface IStudentForm {
   student: any;
 }
 
-
-type EnumObject = {[key: string]: number | string};
-type EnumObjectEnum<E extends EnumObject> = E extends {[key: string]: infer ET | string} ? ET : never;
+type EnumObject = { [key: string]: number | string };
+type EnumObjectEnum<E extends EnumObject> = E extends { [key: string]: infer ET | string }
+  ? ET
+  : never;
 
 function getEnumValues<E extends EnumObject>(enumObject: E): EnumObjectEnum<E>[] {
   return Object.keys(enumObject)
-    .filter(key => Number.isNaN(Number(key)))
-    .map(key => enumObject[key] as EnumObjectEnum<E>);
+    .filter((key) => Number.isNaN(Number(key)))
+    .map((key) => enumObject[key] as EnumObjectEnum<E>);
 }
 
 const StudentForm: FC<IStudentForm> = ({
@@ -47,44 +48,60 @@ const StudentForm: FC<IStudentForm> = ({
   const [form] = Form.useForm();
   const [selStudent, setSelStudent] = useState(students[student]);
 
-  const handleSubmit = (values: Student) => {
-    console.log(values);
+  const handleFinish = (values: Student, mode: string) => {
 
     // Handle form submission
     values.birthday = Number(values.birthday);
-    if (students.length > 0) {
-      values.id = BigNumber.from(Number(students[students.length - 1].id) + 1);
-    } else {
-      values.id = BigNumber.from(1);
-    }
+
 
     values.status = StudentStatus[values.status].toString();
     values.qualification = AcademicQualification[values.qualification].toString();
 
     values.universityAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
 
-    sdk.addNewStudents([values]).then(() => {
-      sdk.getAllStudents().then((data) => {
-        setStudents(data);
-        console.log(data);
+    // console.log(values, selStudent)
+    if (mode === 'Добавить') {
+      if (students.length > 0) {
+        values.id = BigNumber.from(Number(students[students.length - 1].id) + 1);
+      } else {
+        values.id = BigNumber.from(1);
+      }
+
+      sdk.addNewStudents([values]).then(() => {
+        sdk.getAllStudents().then((data) => {
+          setStudents(data);
+          console.log(data);
+        });
+        form.resetFields();
       });
-      form.resetFields();
-    });
+    } else {
+      values.id = students[student].id
+      console.log(values);
+      sdk.updateStudent(values).then(() => {
+        sdk.getAllStudents().then((data) => {
+          setStudents(data);
+          console.log(data);
+        });
+        form.resetFields();
+      });
+    }
   };
 
-  console.log(selStudent);
+  // console.log(selStudent);
   return (
     <Form
-      onFinish={handleSubmit}
+      onFinish={(values) => handleFinish(values, mode)}
       form={form}
-      initialValues={selStudent && {
-        fio: selStudent.fio,
-        photo: selStudent.photo,
-        directionOfStudyCode: selStudent.directionOfStudyCode,
-        status: StudentStatus[selStudent.status],
-        qualification: AcademicQualification[selStudent.qualification],
-        birthday: dayjs(Number(selStudent.birthday))
-      }}>
+      initialValues={
+        selStudent && {
+          fio: selStudent.fio,
+          photo: selStudent.photo,
+          directionOfStudyCode: selStudent.directionOfStudyCode,
+          status: StudentStatus[selStudent.status],
+          qualification: AcademicQualification[selStudent.qualification],
+          birthday: dayjs(Number(selStudent.birthday)),
+        }
+      }>
       <Form.Item>
         <Button
           type="primary"
@@ -103,7 +120,7 @@ const StudentForm: FC<IStudentForm> = ({
         <Input />
       </Form.Item>
       <Form.Item name="birthday" label="Birthday">
-        <DatePicker  />
+        <DatePicker />
       </Form.Item>
       <Form.Item name="directionOfStudyCode" label="Direction of Study Code">
         <Input />
@@ -121,10 +138,11 @@ const StudentForm: FC<IStudentForm> = ({
         <Select>
           {getEnumValues(AcademicQualification).map((qualification, index) => {
             return (
-            <Option key={AcademicQualification[index]} value={AcademicQualification[index]}>
-              {AcademicQualification[index]}
-            </Option>
-          )})}
+              <Option key={AcademicQualification[index]} value={AcademicQualification[index]}>
+                {AcademicQualification[index]}
+              </Option>
+            );
+          })}
         </Select>
       </Form.Item>
       <Form.Item>
