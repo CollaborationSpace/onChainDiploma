@@ -1,5 +1,9 @@
-"node": "cd blockchain && npx hardhat node", - запуска локального блокчейна
-"deploy": "cd blockchain && npx hardhat run scripts/deploy.ts" - деплой контракта на блокчейн
+git switch test
+git pull
+npm i
+npm run blockchain
+npm run deploy
+npm run dev
 
 .env
 

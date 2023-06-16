@@ -1,7 +1,9 @@
 import LayoutMain from '@/components/Layout';
 import Loader from '@/components/Loader';
 import { auth } from '@/config/firebase';
-import { Button, DatePicker, Form, Input, Select } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+import { Button, DatePicker, Form, Input, message, Select, Upload } from 'antd';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 import { BigNumber, ethers } from 'ethers';
@@ -23,6 +25,7 @@ interface IStudentForm {
   setAddStudentForm: any;
   setEditStudentForm: any;
   student: any;
+  form2: any;
 }
 
 type EnumObject = { [key: string]: number | string };
@@ -44,22 +47,68 @@ const StudentForm: FC<IStudentForm> = ({
   setEditStudentForm,
   setAddStudentForm,
   student,
+  form2,
 }) => {
   const [form] = Form.useForm();
   const [selStudent, setSelStudent] = useState(students[student]);
 
-  const handleFinish = (values: Student, mode: string) => {
+  const [fileNames, setFileNames] = useState('');
 
-    // Handle form submission
+  useEffect(() => {
+    setSelStudent(students[student]);
+
+    if (students[student]) {
+      setFileNames(students[student].photo);
+      form.setFieldsValue({
+        fio: students[student].fio,
+        photo: students[student].photo,
+        directionOfStudyCode: students[student].directionOfStudyCode,
+        status: StudentStatus[students[student].status],
+        qualification: AcademicQualification[students[student].qualification],
+        birthday: dayjs(Number(students[student].birthday)),
+      });
+    }
+  }, [student]);
+  console.log(student);
+
+  const handleFileUpload = async (file) => {
+    // Проверка типа файла
+    if (file.type !== 'application/pdf') {
+      message.error('Пожалуйста, загрузите файл в формате PDF!');
+      return false;
+    }
+
+    return false; // Чтобы предотвратить автоматическую загрузку файла на сервер в этом примере
+  };
+
+  const handleFinish = async (values: any, mode: string) => {
+    // console.log(file);
+    if (values.file) {
+      const formData = new FormData();
+      formData.append('file', values.file[0].originFileObj);
+      try {
+        const response = await axios.post('/api/upload', formData);
+        values.photo = response.data.fileName;
+        // Обработка успешной загрузки файла
+      } catch (error) {
+        console.error('Ошибка загрузки файла:', error);
+        // Обработка ошибки загрузки файла
+      }
+    }
+
+    setFileNames(values.photo);
+
+    delete values.file;
+
     values.birthday = Number(values.birthday);
-
 
     values.status = StudentStatus[values.status].toString();
     values.qualification = AcademicQualification[values.qualification].toString();
 
     values.universityAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
 
-    // console.log(values, selStudent)
+    console.log(values);
+
     if (mode === 'Добавить') {
       if (students.length > 0) {
         values.id = BigNumber.from(Number(students[students.length - 1].id) + 1);
@@ -75,33 +124,21 @@ const StudentForm: FC<IStudentForm> = ({
         form.resetFields();
       });
     } else {
-      values.id = students[student].id
+      values.id = students[student].id;
       console.log(values);
       sdk.updateStudent(values).then(() => {
         sdk.getAllStudents().then((data) => {
           setStudents(data);
           console.log(data);
         });
-        form.resetFields();
       });
     }
   };
 
-  // console.log(selStudent);
+  const { Dragger } = Upload;
+
   return (
-    <Form
-      onFinish={(values) => handleFinish(values, mode)}
-      form={form}
-      initialValues={
-        selStudent && {
-          fio: selStudent.fio,
-          photo: selStudent.photo,
-          directionOfStudyCode: selStudent.directionOfStudyCode,
-          status: StudentStatus[selStudent.status],
-          qualification: AcademicQualification[selStudent.qualification],
-          birthday: dayjs(Number(selStudent.birthday)),
-        }
-      }>
+    <Form onFinish={(values) => handleFinish(values, mode)} form={form}>
       <Form.Item>
         <Button
           type="primary"
@@ -116,8 +153,34 @@ const StudentForm: FC<IStudentForm> = ({
       <Form.Item name="fio" label="FIO">
         <Input />
       </Form.Item>
-      <Form.Item name="photo" label="Photo">
-        <Input />
+      {students[student] && (
+        <>
+          <p>Загруженный файл</p>
+          <a target="_blank" href={`./${fileNames}.pdf`}>
+            {fileNames}.pdf
+          </a>
+        </>
+      )}
+
+      <Form.Item
+        name="file"
+        label="Загрузите pdf скан диплома"
+        valuePropName="fileList"
+        getValueFromEvent={(e) => e.fileList}>
+        <Dragger
+          accept=".pdf"
+          maxCount={1}
+          name="file"
+          multiple={false}
+          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+          beforeUpload={handleFileUpload}
+          showUploadList={true}>
+          <p className="ant-upload-drag-icon">
+            <InboxOutlined />
+          </p>
+          <p className="ant-upload-text">Нажмите или перетащите файл для загрузки</p>
+          <p className="ant-upload-hint">Поддерживается только формат PDF</p>
+        </Dragger>
       </Form.Item>
       <Form.Item name="birthday" label="Birthday">
         <DatePicker />
@@ -149,6 +212,9 @@ const StudentForm: FC<IStudentForm> = ({
         <Button type="primary" htmlType="submit">
           {mode}
         </Button>
+      </Form.Item>
+      <Form.Item style={{ display: 'none' }} name="photo" label="Photo">
+        <Input />
       </Form.Item>
     </Form>
   );
@@ -242,6 +308,7 @@ const ModeratorContent = () => {
               setAddStudentForm={setAddStudentForm}
               setEditStudentForm={setEditStudentForm}
               student={selectedStudent}
+              form2={form}
             />
           )}
           {editStudentForm && (
@@ -253,6 +320,7 @@ const ModeratorContent = () => {
               setAddStudentForm={setAddStudentForm}
               setEditStudentForm={setEditStudentForm}
               student={selectedStudent}
+              form2={form}
             />
           )}
         </>
