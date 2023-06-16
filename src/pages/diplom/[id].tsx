@@ -32,12 +32,18 @@ const DiplomContent: FC = () => {
       {!loading && diplom && (
         <>
           <Title level={2}>{diplom.title}</Title>
-          <p >ФИО: {diplom.fio}</p>
+          <p>ФИО: {diplom.fio}</p>
           <p>Дата рождения: {new Date(diplom.birthday).toLocaleDateString()}</p>
           <p>Код направления обучения: {diplom.directionOfStudyCode}</p>
           <p>Квалификация: {diplom.qualification}</p>
           <p>Статус: {diplom.status}</p>
-          <p>Адрес университета: {diplom.universityAddress}</p>
+          <p style={{ marginBottom: '10px' }}>Адрес университета: {diplom.universityAddress}</p>
+
+          <embed
+            src={`/${diplom.photo}.pdf`}
+            type="application/pdf"
+            width="100%"
+            height="600px"></embed>
         </>
       )}
     </Card>
