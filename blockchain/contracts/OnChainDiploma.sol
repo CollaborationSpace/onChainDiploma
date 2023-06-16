@@ -31,6 +31,7 @@ contract OnChainDiploma is Ownable, AccessControlEnumerable {
         uint id;
         string fio;
         string photo;
+        string title;
         uint birthday;
         string directionOfStudyCode;
         address universityAddress;

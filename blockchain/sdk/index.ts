@@ -20,7 +20,6 @@ export default class OnChainDiplomaSDK {
 
     // изменение информации о студенте
     updateStudent = async (student: Student) => {
-        console.log("student", student)
         return await this.contract.updateStudent(student)
     }
 
@@ -55,10 +54,11 @@ export default class OnChainDiplomaSDK {
     }
 
 
-    makeStudent = (fio: string, photo: string, birthday: number, directionOfStudyCode: string, qualification: AcademicQualification): Student => {
+    makeStudent = (fio: string, title: string, photo: string, birthday: number, directionOfStudyCode: string, qualification: AcademicQualification): Student => {
         return {
             fio,
             photo,
+            title,
             birthday,
             directionOfStudyCode,
             universityAddress: '',
@@ -84,6 +84,7 @@ export enum AcademicQualification {
 
 export type Student = {
     id: BigNumber;
+    title: string;
     fio: string;
     photo: string;
     birthday: number;
