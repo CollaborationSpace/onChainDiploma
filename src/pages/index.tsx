@@ -63,8 +63,8 @@ const HomeContent = () => {
             return (
               <Col span={8} key={index}>
                 <Card>
-                  <Title level={4}>Диплом 1</Title>
-                  <p>Описание диплома 1.</p>
+                  <Title level={4}>{student.title}</Title>
+                  <p>{student.fio}</p>
                   <Button type="primary">Просмотреть</Button>
                 </Card>
               </Col>

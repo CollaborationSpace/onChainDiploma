@@ -1,78 +1,51 @@
 import LayoutMain from '@/components/Layout';
+import { Card, Typography } from 'antd';
+import { BigNumber } from 'ethers';
 import { useRouter } from 'next/router';
 import { FC, useEffect, useState } from 'react';
 import OnChainDiplomaSDK from '../../../blockchain/sdk';
-import { Upload, message } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
-import axios from 'axios';
+const { Title, Text } = Typography;
 
 const DiplomContent: FC = () => {
   const [diplom, setDiplom] = useState<any>();
   const [pageId, setPageId] = useState<any>();
+  const [loading, setLoading] = useState(true);
 
   const test = new OnChainDiplomaSDK();
 
   const router = useRouter();
 
   useEffect(() => {
-    // вывести текущей ur);
-
-    router.query.id &&
-      test.getStudentById(router.query.id).then((res) => {
+    if (router.query.id) {
+      setLoading(false);
+      const num = BigNumber.from(Number(router.query.id));
+      test.getStudentById(num).then((res) => {
         setDiplom(res);
         setPageId(router.query.id);
         console.log(res);
       });
-  }, [pageId]);
-
-
-  const handleFileUpload = async (file) => {
-    // Проверка типа файла
-    if (file.type !== 'application/pdf') {
-      message.error('Пожалуйста, загрузите файл в формате PDF!');
-      return false;
     }
+  }, [router.query.id]);
 
-    console.log(file);
-
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await axios.post('/api/upload', formData);
-      console.log('Загруженные файлы:', response.data.fileName);
-      // Обработка успешной загрузки файла
-    } catch (error) {
-      console.error('Ошибка загрузки файла:', error);
-      // Обработка ошибки загрузки файла
-    }
-
-    // Загрузка файла на сервер
-    // Ваш код обработки загрузки файла
-
-    return false; // Чтобы предотвратить автоматическую загрузку файла на сервер в этом примере
-  };
-
-
-  const { Dragger } = Upload;
   return (
-    <>
-      <div>Страница диплома</div>
-      <div>fkdjfkj</div>
-      <Dragger name="file" multiple={false} beforeUpload={handleFileUpload} showUploadList={true}>
-        <p className="ant-upload-drag-icon">
-          <InboxOutlined />
-        </p>
-        <p className="ant-upload-text">Нажмите или перетащите файл для загрузки</p>
-        <p className="ant-upload-hint">Поддерживается только формат PDF</p>
-      </Dragger>
-    </>
+    <Card>
+      {!loading && diplom && (
+        <>
+          <Title level={2}>{diplom.title}</Title>
+          <p >ФИО: {diplom.fio}</p>
+          <p>Дата рождения: {new Date(diplom.birthday).toLocaleDateString()}</p>
+          <p>Код направления обучения: {diplom.directionOfStudyCode}</p>
+          <p>Квалификация: {diplom.qualification}</p>
+          <p>Статус: {diplom.status}</p>
+          <p>Адрес университета: {diplom.universityAddress}</p>
+        </>
+      )}
+    </Card>
   );
 };
 
 const Diplom = ({ params }) => {
-  return <LayoutMain childComponent={<DiplomContent />} />;
+  return <LayoutMain childComponent={<DiplomContent params={params} />} />;
 };
 
 export default Diplom;

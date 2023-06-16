@@ -121,6 +121,7 @@ const StudentForm: FC<IStudentForm> = ({
         sdk.getAllStudents().then((data) => {
           setStudents(data);
           console.log(data);
+          message.success("Студент Добавлен");
         });
         form.resetFields();
       });
@@ -131,13 +132,14 @@ const StudentForm: FC<IStudentForm> = ({
         sdk.getAllStudents().then((data) => {
           setStudents(data);
           console.log(data);
+          message.success("Информация о студенте изменена");
         });
       });
     }
   };
 
   const { Dragger } = Upload;
-
+  const reqView = fileNames == '' ? true : false;
   return (
     <Form onFinish={(values) => handleFinish(values, mode)} form={form}>
       <Form.Item>
@@ -145,16 +147,22 @@ const StudentForm: FC<IStudentForm> = ({
           type="primary"
           onClick={(e) => {
             form.resetFields();
-            setAddStudentForm(true);
-            setEditStudentForm(false);
+            // setAddStudentForm(true);
+            // setEditStudentForm(false);
           }}>
           Очистить форму
         </Button>
       </Form.Item>
-      <Form.Item name="fio" label="FIO">
+      <Form.Item
+        name="fio"
+        label="ФИО"
+        rules={[{ required: true, message: 'Пожалуйста, введите ваше ФИО!' }]}>
         <Input />
       </Form.Item>
-      <Form.Item name="title" label="Тема диплома">
+      <Form.Item
+        name="title"
+        label="Тема диплома"
+        rules={[{ required: true, message: 'Пожалуйста, введите тему диплома!' }]}>
         <Input />
       </Form.Item>
       {students[student] && (
@@ -168,7 +176,8 @@ const StudentForm: FC<IStudentForm> = ({
 
       <Form.Item
         name="file"
-        label="Загрузите pdf скан диплома"
+        label="PDF скан диплома"
+        rules={[{ required: reqView, message: 'Пожалуйста, загрузите pdf скан диплома!' }]}
         valuePropName="fileList"
         getValueFromEvent={(e) => e.fileList}>
         <Dragger
@@ -186,13 +195,22 @@ const StudentForm: FC<IStudentForm> = ({
           <p className="ant-upload-hint">Поддерживается только формат PDF</p>
         </Dragger>
       </Form.Item>
-      <Form.Item name="birthday" label="Birthday">
+      <Form.Item
+        name="birthday"
+        label="День рождения"
+        rules={[{ required: true, message: 'Пожалуйста, выберите дату рождения!' }]}>
         <DatePicker />
       </Form.Item>
-      <Form.Item name="directionOfStudyCode" label="Direction of Study Code">
+      <Form.Item
+        name="directionOfStudyCode"
+        label="Код направления обучения"
+        rules={[{ required: true, message: 'Пожалуйста, введите код направления обучения!' }]}>
         <Input />
       </Form.Item>
-      <Form.Item name="status" label="Status">
+      <Form.Item
+        name="status"
+        label="Статус"
+        rules={[{ required: true, message: 'Пожалуйста, введите код статус!' }]}>
         <Select>
           {getEnumValues(StudentStatus).map((status, index) => (
             <Option key={StudentStatus[index]} value={StudentStatus[index]}>
@@ -201,7 +219,10 @@ const StudentForm: FC<IStudentForm> = ({
           ))}
         </Select>
       </Form.Item>
-      <Form.Item name="qualification" label="Qualification">
+      <Form.Item
+        name="qualification"
+        label="Квалификация"
+        rules={[{ required: true, message: 'Пожалуйста, введите квалификацию!' }]}>
         <Select>
           {getEnumValues(AcademicQualification).map((qualification, index) => {
             return (
