@@ -62,6 +62,7 @@ const StudentForm: FC<IStudentForm> = ({
       form.setFieldsValue({
         fio: students[student].fio,
         photo: students[student].photo,
+        title: students[student].title,
         directionOfStudyCode: students[student].directionOfStudyCode,
         status: StudentStatus[students[student].status],
         qualification: AcademicQualification[students[student].qualification],
@@ -151,6 +152,9 @@ const StudentForm: FC<IStudentForm> = ({
         </Button>
       </Form.Item>
       <Form.Item name="fio" label="FIO">
+        <Input />
+      </Form.Item>
+      <Form.Item name="title" label="Тема диплома">
         <Input />
       </Form.Item>
       {students[student] && (
